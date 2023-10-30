@@ -1,11 +1,35 @@
+import { response } from "msw";
 import React, { useState } from "react";
 
-function ItemForm() {
+function ItemForm({addToList}) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Produce");
 
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    const formData = {
+      name: name,
+      category: category,
+      isInCart: false
+    }
+    //console.log(formData);
+    fetch("http://localhost:4000/items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(r => r.json())
+    .then((newItem) => {
+      addToList(newItem)
+    })
+    
+
+  }
+
   return (
-    <form className="NewItem">
+    <form className="NewItem" onSubmit={handleFormSubmit}>
       <label>
         Name:
         <input
@@ -13,6 +37,7 @@ function ItemForm() {
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
       </label>
 
